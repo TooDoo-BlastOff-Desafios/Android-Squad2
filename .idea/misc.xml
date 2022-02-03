@@ -29,7 +29,7 @@
         <entry key="app/src/main/res/layout/activity_welcome.xml" value="0.1" />
         <entry key="app/src/main/res/layout/credit_card.xml" value="0.328125" />
         <entry key="app/src/main/res/layout/divider.xml" value="0.328125" />
-        <entry key="app/src/main/res/layout/exchange_from.xml" value="0.328125" />
+        <entry key="app/src/main/res/layout/exchange_from.xml" value="0.75" />
         <entry key="app/src/main/res/layout/exchange_to.xml" value="0.328125" />
         <entry key="app/src/main/res/layout/fragment_currency.xml" value="0.328125" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.25462962962962965" />
