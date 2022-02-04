@@ -5,11 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
-import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsetsController
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -19,7 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import br.com.toodoo.fipay.R
-import br.com.toodoo.fipay.api.UserService
+import br.com.toodoo.fipay.api.FiPayApi
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.User
@@ -92,7 +89,7 @@ class MainActivity : AppCompatActivity() {
     private fun getUserData(userEmail: String?) {
         if (userEmail != null) {
             val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
-            val endpoint = retrofitClient.create(UserService::class.java)
+            val endpoint = retrofitClient.create(FiPayApi::class.java)
             val callback = endpoint.getUsers()
 
             callback.enqueue(object : Callback<List<User>> {
@@ -100,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                     response.body()?.let { responseBody ->
                         val userData = responseBody.filter { it.email == userEmail }
                         user = userData[0]
+                        FirebaseHelper.logedUser = userData[0]
                         continueExecution()
                     }
                 }

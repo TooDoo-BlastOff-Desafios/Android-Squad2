@@ -8,15 +8,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import br.com.toodoo.fipay.R
-import br.com.toodoo.fipay.api.UserService
 import br.com.toodoo.fipay.helper.FirebaseHelper
-import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.User
 import br.com.toodoo.fipay.ui.MainActivity
 import com.google.android.material.snackbar.Snackbar
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class SignInActivity : AppCompatActivity() {
 

@@ -3,14 +3,13 @@ package br.com.toodoo.fipay.ui.authentication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import br.com.toodoo.fipay.R
-import br.com.toodoo.fipay.api.UserService
+import br.com.toodoo.fipay.api.FiPayApi
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.Address
@@ -75,7 +74,7 @@ class SignUpActivity : AppCompatActivity() {
 
     private fun saveUserData(user: User) {
         val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
-        val endpoint = retrofitClient.create(UserService::class.java)
+        val endpoint = retrofitClient.create(FiPayApi::class.java)
         val callback = endpoint.insertUser(user)
 
         callback.enqueue(object: Callback<User> {

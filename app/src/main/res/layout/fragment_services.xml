@@ -50,7 +50,7 @@
         app:layout_constraintTop_toBottomOf="@+id/rgTransationType" />
 
     <EditText
-        android:id="@+id/editText"
+        android:id="@+id/editDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -73,7 +73,7 @@
         android:weightSum="1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText">
+        app:layout_constraintTop_toBottomOf="@+id/editDescription">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -88,11 +88,14 @@
                 android:text="Cash Value" />
 
             <EditText
-                android:inputType="numberDecimal"
+                android:id="@+id/editCashValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/input_background" />
+                android:background="@drawable/input_background"
+                android:drawableStart="@drawable/ic_money"
+                android:drawablePadding="8dp"
+                android:inputType="numberDecimal" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -109,11 +112,14 @@
                 android:text="Date" />
 
             <EditText
-                android:inputType="date"
+                android:id="@+id/editDate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/input_background" />
+                android:background="@drawable/input_background"
+                android:drawableStart="@drawable/ic_calendar"
+                android:drawablePadding="8dp"
+                android:inputType="date" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -139,10 +145,10 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:inputType="number"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:background="@drawable/input_background" />
+            android:background="@drawable/input_background"
+            android:inputType="number" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
