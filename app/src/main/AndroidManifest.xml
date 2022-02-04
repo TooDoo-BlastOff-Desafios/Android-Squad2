@@ -16,9 +16,6 @@
             android:name=".ui.MainActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.MainActivityTeste2"
-            android:exported="false" />
-        <activity
             android:name=".ui.authentication.ForgotPasswordActivity"
             android:exported="false" />
         <activity

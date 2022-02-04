@@ -11,4 +11,6 @@
     <color name="neutral_700">#394452</color>
     <color name="neutral_500">#56616F</color>
     <color name="neutral_200">#A5ABB3</color>
+
+    <color name="red">#FF1843</color>
 </resources>

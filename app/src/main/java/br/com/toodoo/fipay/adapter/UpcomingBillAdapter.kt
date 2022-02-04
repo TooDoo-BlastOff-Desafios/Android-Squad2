@@ -29,7 +29,7 @@ class UpcomingBillAdapter(
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bindView(bill: Bill) {
-            val category: TextView = itemView.findViewById(R.id.txtCategory)
+            val category: TextView = itemView.findViewById(R.id.txtTitle)
             val date: TextView = itemView.findViewById(R.id.txtDate)
 
             category.text = bill.category
