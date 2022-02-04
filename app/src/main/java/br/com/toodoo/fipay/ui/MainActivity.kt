@@ -3,21 +3,30 @@ package br.com.toodoo.fipay.ui
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.view.WindowInsetsController
 import android.widget.ImageButton
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import br.com.toodoo.fipay.R
+import br.com.toodoo.fipay.api.UserService
 import br.com.toodoo.fipay.helper.FirebaseHelper
+import br.com.toodoo.fipay.helper.NetworkHelper
+import br.com.toodoo.fipay.model.User
 import br.com.toodoo.fipay.ui.fragments.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,13 +36,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var toolbarContainer: LinearLayoutCompat
     private lateinit var toolbarTitle: TextView
 
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
+
+    private var user: User = User()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        btnOpenSettings = findViewById(R.id.btnOpenSettings)
-        toolbarContainer = findViewById(R.id.toolbarContainer)
-        toolbarTitle = findViewById(R.id.toolbarTitle)
+        val userEmail = FirebaseHelper.getFirebaseAuth().currentUser?.email
+
+        initComponents()
+        getUserData(userEmail)
 
         val settingsSelectedItem = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -54,8 +69,17 @@ class MainActivity : AppCompatActivity() {
         // Init fragmentManager and set the MyCardFragment to be load when the activity is created
         fragmentManager = supportFragmentManager
         fragmentTransaction = fragmentManager.beginTransaction()
-        toolbarTitle.text = "MyCard"
+
         fragmentTransaction.replace(R.id.navigation_host_fragment, MyCardFragment()).commit()
+    }
+
+    private fun initComponents() {
+        btnOpenSettings = findViewById(R.id.btnOpenSettings)
+        toolbarContainer = findViewById(R.id.toolbarContainer)
+        toolbarTitle = findViewById(R.id.toolbarTitle)
+
+        sharedPreferences = getSharedPreferences(getString(R.string.pref_key), Context.MODE_PRIVATE)
+        editor = sharedPreferences.edit()
     }
 
     private fun resetToolbarColors() {
@@ -63,6 +87,40 @@ class MainActivity : AppCompatActivity() {
         toolbarTitle.setTextColor(ContextCompat.getColor(this, R.color.neutral_700))
         btnOpenSettings.drawable.setTint(ContextCompat.getColor(this, R.color.neutral_700))
         window.statusBarColor = Color.WHITE
+    }
+
+    private fun getUserData(userEmail: String?) {
+        if (userEmail != null) {
+            val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
+            val endpoint = retrofitClient.create(UserService::class.java)
+            val callback = endpoint.getUsers()
+
+            callback.enqueue(object : Callback<List<User>> {
+                override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                    response.body()?.let { responseBody ->
+                        val userData = responseBody.filter { it.email == userEmail }
+                        user = userData[0]
+                        continueExecution()
+                    }
+                }
+
+                override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                    FirebaseHelper.getFirebaseAuth().signOut()
+                    Toast.makeText(this@MainActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+
+            })
+        } else {
+            FirebaseHelper.getFirebaseAuth().signOut()
+            Toast.makeText(this@MainActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    // All the code that must only execute after getUserData()
+    private fun continueExecution() {
+        toolbarTitle.text = "Good morning, ${user.fullName.split(" ")[0]}"
     }
 
     // Load the choosed fragment based on the menu item id
@@ -83,7 +141,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.menu_item_my_card -> {
                 fragmentTransaction = fragmentManager.beginTransaction()
-                toolbarTitle.text = "My Card"
+                toolbarTitle.text = "Good morning, ${user.fullName.split(" ")[0]}"
                 resetToolbarColors()
                 fragmentTransaction.replace(R.id.navigation_host_fragment, MyCardFragment()).commit()
             }

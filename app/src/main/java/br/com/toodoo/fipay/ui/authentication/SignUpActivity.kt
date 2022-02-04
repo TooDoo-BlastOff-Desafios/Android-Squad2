@@ -3,15 +3,21 @@ package br.com.toodoo.fipay.ui.authentication
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.Toast
 import br.com.toodoo.fipay.R
+import br.com.toodoo.fipay.api.UserService
 import br.com.toodoo.fipay.helper.FirebaseHelper
+import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.Address
 import br.com.toodoo.fipay.model.User
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SignUpActivity : AppCompatActivity() {
 
@@ -68,20 +74,23 @@ class SignUpActivity : AppCompatActivity() {
     }
 
     private fun saveUserData(user: User) {
-        val userRef = FirebaseHelper.getDbReference()
-            .child("users")
-            .child(user.id.toString())
+        val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
+        val endpoint = retrofitClient.create(UserService::class.java)
+        val callback = endpoint.insertUser(user)
 
-        userRef.setValue(user).addOnCompleteListener { task ->
-            run {
-                if (task.isSuccessful) {
-                    sendEmailVerification()
-                } else {
-                    progressBar.visibility = View.VISIBLE
-                    Toast.makeText(this, "Failed", Toast.LENGTH_LONG).show()
-                }
+        callback.enqueue(object: Callback<User> {
+            override fun onResponse(call: Call<User>, response: Response<User>) {
+                val responseApi = response.body()
+                sendEmailVerification()
             }
-        }
+
+            override fun onFailure(call: Call<User>, t: Throwable) {
+                progressBar.visibility = View.VISIBLE
+                Toast.makeText(this@SignUpActivity, "Failed", Toast.LENGTH_LONG).show()
+            }
+
+        })
+
     }
 
     private fun registerUser(user: User) {
@@ -90,9 +99,6 @@ class SignUpActivity : AppCompatActivity() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     task.result?.user?.let {
-                        val id = it.uid
-                        user.id = id
-
                         saveUserData(user)
                     }
                 } else {
@@ -170,7 +176,7 @@ class SignUpActivity : AppCompatActivity() {
         }
 
         val address = Address(country, state, city, street)
-        val user = User("", fullName, cpf, email, password, address)
+        val user = User(cpf, fullName, email, password, country, state, city, street)
 
         registerUser(user)
     }
