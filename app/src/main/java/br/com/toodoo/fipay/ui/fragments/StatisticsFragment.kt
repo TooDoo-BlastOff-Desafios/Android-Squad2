@@ -9,9 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import br.com.toodoo.fipay.R
 import br.com.toodoo.fipay.adapter.TransactionHistoryAdapter
-import br.com.toodoo.fipay.adapter.UpcomingBillAdapter
-import br.com.toodoo.fipay.model.Bill
 import br.com.toodoo.fipay.model.Transaction
+import br.com.toodoo.fipay.model.TransactionType
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -28,7 +27,7 @@ class StatisticsFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_statistics, container, false)
 
-        transactionHistoryAdapter = TransactionHistoryAdapter(transactions())
+        transactionHistoryAdapter = TransactionHistoryAdapter(transactions(), container!!.context)
         rvTransactionHistory = view.findViewById(R.id.rvTransactionHistory)
         rvTransactionHistory.adapter = transactionHistoryAdapter
         rvTransactionHistory.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.VERTICAL, false)
@@ -38,9 +37,9 @@ class StatisticsFragment : Fragment() {
 
     private fun transactions(): ArrayList<Transaction> {
         return arrayListOf<Transaction>(
-            Transaction("Market bills", 199.0, Date()),
-            Transaction("Market bills", 199.0, Date()),
-            Transaction("Market bills", 199.0, Date()),
+            Transaction("Salary", 1246.0, TransactionType.INCOME, Date()),
+            Transaction("Credit card bills", 489.99, TransactionType.INCOME, Date()),
+            Transaction("Market bills", 199.12, TransactionType.OUTCOME,Date()),
         )
     }
 
