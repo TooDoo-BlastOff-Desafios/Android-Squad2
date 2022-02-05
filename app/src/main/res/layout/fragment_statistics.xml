@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.AccountFragment">
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="@color/purple_700"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cvStatistics"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="28dp"
+        app:cardCornerRadius="12dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:padding="24dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_marginTop="8dp"
+                android:id="@+id/txtIncomes"
+                android:textColor="@color/neutral_200"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Incomes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txtIncomeAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$200.20"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/txtIncomes"
+                app:layout_constraintTop_toBottomOf="@+id/txtIncomes" />
+
+            <ImageView
+                android:id="@+id/imageView6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_arrow_down"
+                app:layout_constraintBottom_toBottomOf="@+id/txtIncomeAmount"
+                app:layout_constraintStart_toEndOf="@+id/txtIncomeAmount"
+                app:layout_constraintTop_toTopOf="@+id/txtIncomeAmount" />
+
+
+            <TextView
+                android:id="@+id/txtOutcomes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Incomes"
+                android:textColor="@color/neutral_200"
+                app:layout_constraintStart_toStartOf="@+id/txtOutcomesAmount"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:layout_marginEnd="8dp"
+                android:id="@+id/txtOutcomesAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$200.20"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/arrowUp"
+                app:layout_constraintTop_toBottomOf="@+id/txtOutcomes" />
+
+            <ImageView
+                android:id="@+id/arrowUp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/ic_arrow_up"
+                app:layout_constraintBottom_toBottomOf="@+id/txtOutcomesAmount"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/txtOutcomesAmount" />
+
+            <ImageView
+                android:id="@+id/imageView7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:alpha="0.2"
+                android:background="@color/neutral_200"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtIncomeAmount" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/txtUpcomingBill"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="Transaction History"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/cvStatistics"
+        app:layout_constraintTop_toBottomOf="@+id/cvStatistics" />
+
+    <TextView
+        android:id="@+id/txtSeeAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/see_all"
+        android:textColor="@color/purple_700"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/txtUpcomingBill"
+        app:layout_constraintEnd_toEndOf="@+id/cvStatistics" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTransactionHistory"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/txtUpcomingBill"
+        tools:listitem="@layout/transaction_history_item" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

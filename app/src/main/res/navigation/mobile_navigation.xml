@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_item_my_card">
+
+    <fragment
+        android:id="@+id/nav_item_account"
+        android:name="br.com.toodoo.fipay.ui.fragments.AccountFragment"
+        android:label="Account"
+        tools:layout="@layout/fragment_my_card" />
+
+    <fragment
+        android:id="@+id/nav_item_notification"
+        android:name="br.com.toodoo.fipay.ui.fragments.NotificationsFragment"
+        android:label="Notifications"
+        tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/nav_item_my_card"
+        android:name="br.com.toodoo.fipay.ui.fragments.MyCardFragment"
+        android:label="My Card"
+        tools:layout="@layout/fragment_account" />
+
+    <fragment
+        android:id="@+id/nav_item_security"
+        android:name="br.com.toodoo.fipay.ui.fragments.SecurityFragment"
+        android:label="Security"
+        tools:layout="@layout/fragment_security" />
+
+    <fragment
+        android:id="@+id/nav_item_currency"
+        android:name="br.com.toodoo.fipay.ui.fragments.CurrencyFragment"
+        android:label="Currency"
+        tools:layout="@layout/fragment_currency" />
+
+    <fragment
+        android:id="@+id/nav_item_services"
+        android:name="br.com.toodoo.fipay.ui.fragments.ServicesFragment"
+        android:label="Services"
+        tools:layout="@layout/fragment_services" />
+
+    <fragment
+        android:id="@+id/nav_item_statistics"
+        android:name="br.com.toodoo.fipay.ui.fragments.StatisticsFragment"
+        android:label="Statistics"
+        tools:layout="@layout/fragment_statistics" />
+
+
+</navigation>

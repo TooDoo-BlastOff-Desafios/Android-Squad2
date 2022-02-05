@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/screens"
+        android:checkableBehavior="single">
+
+        <item android:id="@+id/nav_item_account" android:title="@string/account" android:icon="@drawable/ic_account" />
+        <item android:id="@+id/nav_item_notification" android:title="@string/notification" android:icon="@drawable/ic_notification" />
+        <item android:id="@+id/nav_item_my_card" android:title="@string/my_card" android:icon="@drawable/ic_card" />
+        <item android:id="@+id/nav_item_security" android:title="@string/security" android:icon="@drawable/ic_security" />
+        <item android:id="@+id/nav_item_currency" android:title="@string/currency" android:icon="@drawable/ic_currency" />
+        <item android:id="@+id/nav_item_services" android:title="@string/services" android:icon="@drawable/ic_services" />
+        <item android:id="@+id/nav_item_statistics" android:title="@string/statistics" android:icon="@drawable/ic_statistics" />
+
+    </group>
+
+</menu>
