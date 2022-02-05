@@ -37,9 +37,9 @@ class StatisticsFragment : Fragment() {
 
     private fun transactions(): ArrayList<Transaction> {
         return arrayListOf<Transaction>(
-            Transaction("Salary", 1246.0, TransactionType.INCOME, Date()),
-            Transaction("Credit card bills", 489.99, TransactionType.INCOME, Date()),
-            Transaction("Market bills", 199.12, TransactionType.OUTCOME,Date()),
+            Transaction("Salary", 1246.0, Calendar.getInstance().time.toString(), "", TransactionType.PURCHASE),
+            Transaction("Salary", 1246.0, Calendar.getInstance().time.toString(), "", TransactionType.PURCHASE),
+            Transaction("Salary", 1246.0, Calendar.getInstance().time.toString(), "", TransactionType.PURCHASE),
         )
     }
 

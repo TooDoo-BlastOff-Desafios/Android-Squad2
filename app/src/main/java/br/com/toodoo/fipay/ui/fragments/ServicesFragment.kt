@@ -1,8 +1,8 @@
 package br.com.toodoo.fipay.ui.fragments
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +17,11 @@ import br.com.toodoo.fipay.api.FiPayApi
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.Deposit
-import br.com.toodoo.fipay.model.User
+import br.com.toodoo.fipay.model.Purchase
+import br.com.toodoo.fipay.model.Transfer
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,7 +33,9 @@ class ServicesFragment : Fragment() {
     private lateinit var editDate: EditText
     private lateinit var transferRecipient: LinearLayoutCompat
     private lateinit var btnValidateTransaction: Button
+    private lateinit var editTransferRecipientCpf: EditText
 
+    @SuppressLint("SimpleDateFormat")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +44,7 @@ class ServicesFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_services, container, false)
 
         initComponents(view)
+        setDatePicker()
 
         rgTransationType.setOnCheckedChangeListener { radioGroup, i ->
             if (i == R.id.rbTransfer) {
@@ -51,18 +54,51 @@ class ServicesFragment : Fragment() {
             }
         }
 
-        setDatePicker()
+        validateTransaction()
 
+        return view
+    }
+
+    private fun validateTransaction() {
         btnValidateTransaction.setOnClickListener {
             if (editCashValue.text.isNotEmpty()) {
 
-                if (rgTransationType.checkedRadioButtonId == R.id.rbDeposit) {
-                    makeDeposit()
+                if (editDate.text.isNotEmpty()) {
+                    val description = editDescription.text.toString()
+                    val value = editCashValue.text.toString().toDouble()
+                    val dateFormatFromString = SimpleDateFormat("dd/MM/yyyy")
+                    val dateFormat = SimpleDateFormat("yyyy-MM-dd")
+                    val date =
+                        dateFormat.format(dateFormatFromString.parse(editDate.text.toString()))
+
+                    // Verify the checked radio button and call the corresponding transaction method
+                    if (rgTransationType.checkedRadioButtonId == R.id.rbDeposit) {
+                        val deposit =
+                            Deposit(description, value, date, FirebaseHelper.logedUser!!.cpf)
+                        makeDeposit(deposit)
+                    } else if (rgTransationType.checkedRadioButtonId == R.id.rbPurchase) {
+                        val purchase =
+                            Purchase(description, value, date, FirebaseHelper.logedUser!!.cpf)
+                        makePurchase(purchase)
+                    } else if (rgTransationType.checkedRadioButtonId == R.id.rbTransfer) {
+                        if (editTransferRecipientCpf.text.isNotEmpty()) {
+                            val recipientCpf = editTransferRecipientCpf.text.toString()
+                            val transfer =
+                                Transfer(description, value, date, recipientCpf)
+                            makeTransfer(transfer)
+                        } else {
+                            editTransferRecipientCpf.error =
+                                "You must provide a transfer recipient."
+                            editTransferRecipientCpf.requestFocus()
+                        }
+                    }
+
                 }
+            } else {
+                editCashValue.error = "You must provide a value."
+                editCashValue.requestFocus()
             }
         }
-
-        return view
     }
 
     private fun setDatePicker() {
@@ -74,10 +110,9 @@ class ServicesFragment : Fragment() {
                 cal.set(Calendar.MONTH, monthOfYear)
                 cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
 
-                val myFormat = "dd/MM/yyyy" // mention the format you need
+                val myFormat = "dd/MM/yyyy"
                 val sdf = SimpleDateFormat(myFormat, Locale.US)
                 editDate.setText(sdf.format(cal.time))
-
             }
 
         editDate.setOnClickListener {
@@ -87,7 +122,6 @@ class ServicesFragment : Fragment() {
                 cal.get(Calendar.MONTH),
                 cal.get(Calendar.DAY_OF_MONTH)
             ).show()
-
         }
     }
 
@@ -98,43 +132,64 @@ class ServicesFragment : Fragment() {
         editDate = view.findViewById(R.id.editDate)
         transferRecipient = view.findViewById(R.id.transferRecipient)
         btnValidateTransaction = view.findViewById(R.id.btnValidateTransaction)
+        editTransferRecipientCpf = view.findViewById(R.id.editTransferRecipientCpf)
     }
 
-    private fun makeDeposit() {
-        val description = editDescription.text.toString()
-        val value = editCashValue.text.toString().toDouble()
-        val dateFormatFromString = SimpleDateFormat("dd/MM/yyyy")
-        val dateFormat = SimpleDateFormat("yyyy-dd-MM")
-        val date = dateFormat.format(dateFormatFromString.parse(editDate.text.toString()))
-        Log.i("FIPAY_LOG", "makeDeposit: $date")
-//        val date = dateFormat.format(editDate.text.toString())
-        Toast.makeText(context, "Data: $date", Toast.LENGTH_SHORT).show()
-        val client = FirebaseHelper.logedUser
+    private fun makeDeposit(deposit: Deposit) {
 
-        if (description.isNotEmpty() && !value.isNaN() && client != null) {
-            val deposit = Deposit(description, value, date, client.cpf)
+        val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
+        val endpoint = retrofitClient.create(FiPayApi::class.java)
 
-            val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
-            val endpoint = retrofitClient.create(FiPayApi::class.java)
-            val callback = endpoint.makeDeposit(deposit)
+        val callback: Call<Deposit> = endpoint.makeDeposit(deposit)
 
-            callback.enqueue(object : Callback<Deposit> {
-                override fun onResponse(call: Call<Deposit>, response: Response<Deposit>) {
-                    Toast.makeText(context, "Deposited with success.", Toast.LENGTH_SHORT).show()
-                }
+        callback.enqueue(object : Callback<Deposit> {
+            override fun onResponse(call: Call<Deposit>, response: Response<Deposit>) {
+                Toast.makeText(context, "Deposit succeed.", Toast.LENGTH_SHORT).show()
+            }
 
-                override fun onFailure(call: Call<Deposit>, t: Throwable) {
-                    Toast.makeText(context, "Erro while making deposit.", Toast.LENGTH_SHORT).show()
-                }
+            override fun onFailure(call: Call<Deposit>, t: Throwable) {
+                Toast.makeText(context, "Error while making transaction.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        })
+    }
 
-            })
-        }
+    private fun makePurchase(purchase: Purchase) {
 
-        Toast.makeText(
-            context,
-            "Deposito do ${FirebaseHelper.logedUser?.fullName}",
-            Toast.LENGTH_SHORT
-        ).show()
+        val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
+        val endpoint = retrofitClient.create(FiPayApi::class.java)
+
+        val callback: Call<Purchase> = endpoint.makePurchase(purchase)
+
+        callback.enqueue(object : Callback<Purchase> {
+            override fun onResponse(call: Call<Purchase>, response: Response<Purchase>) {
+                Toast.makeText(context, "Purchase succeed.", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(call: Call<Purchase>, t: Throwable) {
+                Toast.makeText(context, "Error while making transaction.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        })
+    }
+
+    private fun makeTransfer(transfer: Transfer) {
+
+        val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
+        val endpoint = retrofitClient.create(FiPayApi::class.java)
+
+        val callback: Call<Transfer> = endpoint.makeTransfer(transfer)
+
+        callback.enqueue(object : Callback<Transfer> {
+            override fun onResponse(call: Call<Transfer>, response: Response<Transfer>) {
+                Toast.makeText(context, "Transfer succeed.", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onFailure(call: Call<Transfer>, t: Throwable) {
+                Toast.makeText(context, "Error while making transaction.", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        })
     }
 
 }

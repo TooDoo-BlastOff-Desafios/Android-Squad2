@@ -1,15 +1,18 @@
 package br.com.toodoo.fipay.model
 
+import com.google.gson.annotations.SerializedName
 import java.util.*
 
-class Transaction (
-    var title: String? = "",
-    var value: Double? = 0.0,
-    var type: TransactionType? = null,
-    var date: Date? = null
+open class Transaction (
+    val description: String,
+    val cash_value: Double,
+    val date: String,
+    @SerializedName("destinatario")
+    var cliente: String,
+    var type: TransactionType? = null
 ) {
 }
 
 enum class TransactionType {
-    INCOME, OUTCOME
+    DEPOSIT, PURCHASE, TRANSFER
 }

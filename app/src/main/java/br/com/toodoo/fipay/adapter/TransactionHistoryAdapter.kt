@@ -41,12 +41,12 @@ class TransactionHistoryAdapter(
             val value: TextView = itemView.findViewById(R.id.txtValue)
 
             val calendar = GregorianCalendar()
-            calendar.time = transaction.date!!
+//            calendar.time = transaction.date!!
 
-            title.text = transaction.title
-            value.text = "$ ${transaction.value}"
-            if (transaction.type == TransactionType.OUTCOME) value.setTextColor(ContextCompat.getColor(context, R.color.red))
-            date.text = "${months[calendar.get(Calendar.MONTH)]} ${calendar.get(Calendar.DAY_OF_MONTH)}, ${calendar.get(Calendar.YEAR)}"
+            title.text = transaction.description
+            value.text = "$ ${transaction.cash_value}"
+            if (transaction.type == TransactionType.PURCHASE || transaction.type == TransactionType.TRANSFER) value.setTextColor(ContextCompat.getColor(context, R.color.red))
+//            date.text = "${months[calendar.get(Calendar.MONTH)]} ${calendar.get(Calendar.DAY_OF_MONTH)}, ${calendar.get(Calendar.YEAR)}"
         }
     }
 
