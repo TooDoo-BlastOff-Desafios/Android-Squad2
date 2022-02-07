@@ -7,27 +7,24 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import br.com.toodoo.fipay.R
-import br.com.toodoo.fipay.api.FiPayApi
 import br.com.toodoo.fipay.helper.AuthenticationHelper
 import br.com.toodoo.fipay.helper.FiPayApiHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
-import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.User
 import br.com.toodoo.fipay.ui.fragments.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -120,7 +117,15 @@ class MainActivity : AppCompatActivity() {
 
     // All the code that must only execute after getUserData()
     private fun continueExecution() {
-        toolbarTitle.text = "Good morning, ${user.fullName.split(" ")[0]}"
+        toolbarTitle.text = "${getGreetings()}, ${user.fullName.split(" ")[0]}"
+    }
+
+    private fun getGreetings(): String {
+        val time = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+
+        if (time >= 6 && time < 12) return "Good morning"
+        else if (time < 18) return "Good afternoon"
+        else return "Good evening"
     }
 
     // Load the choosed fragment based on the menu item id
