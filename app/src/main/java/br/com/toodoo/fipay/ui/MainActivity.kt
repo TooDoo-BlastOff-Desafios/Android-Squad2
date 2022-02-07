@@ -7,12 +7,14 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import br.com.toodoo.fipay.R
@@ -129,7 +131,10 @@ class MainActivity : AppCompatActivity() {
             R.id.menu_item_account -> {
                 fragmentTransaction = fragmentManager.beginTransaction()
                 toolbarTitle.text = "Account"
-                resetToolbarColors()
+                toolbarContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.purple_700))
+                toolbarTitle.setTextColor(Color.WHITE)
+                btnOpenSettings.drawable.setTint(Color.WHITE)
+                window.statusBarColor = ContextCompat.getColor(this, R.color.purple_700)
                 fragmentTransaction.replace(R.id.navigation_host_fragment, AccountFragment()).commit()
             }
             R.id.menu_item_notification -> {
