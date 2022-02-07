@@ -19,6 +19,7 @@ import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.Deposit
 import br.com.toodoo.fipay.model.Purchase
 import br.com.toodoo.fipay.model.Transfer
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -34,6 +35,7 @@ class ServicesFragment : Fragment() {
     private lateinit var transferRecipient: LinearLayoutCompat
     private lateinit var btnValidateTransaction: Button
     private lateinit var editTransferRecipientCpf: EditText
+    private lateinit var progressBar: CircularProgressIndicator
 
     @SuppressLint("SimpleDateFormat")
     override fun onCreateView(
@@ -76,16 +78,22 @@ class ServicesFragment : Fragment() {
                         val deposit =
                             Deposit(description, value, date, FirebaseHelper.logedUser!!.cpf)
                         makeDeposit(deposit)
+
+                        progressBar.visibility = View.VISIBLE
                     } else if (rgTransationType.checkedRadioButtonId == R.id.rbPurchase) {
                         val purchase =
                             Purchase(description, value, date, FirebaseHelper.logedUser!!.cpf)
                         makePurchase(purchase)
+
+                        progressBar.visibility = View.VISIBLE
                     } else if (rgTransationType.checkedRadioButtonId == R.id.rbTransfer) {
                         if (editTransferRecipientCpf.text.isNotEmpty()) {
                             val recipientCpf = editTransferRecipientCpf.text.toString()
                             val transfer =
                                 Transfer(description, value, date, recipientCpf)
                             makeTransfer(transfer)
+
+                            progressBar.visibility = View.VISIBLE
                         } else {
                             editTransferRecipientCpf.error =
                                 "You must provide a transfer recipient."
@@ -133,6 +141,7 @@ class ServicesFragment : Fragment() {
         transferRecipient = view.findViewById(R.id.transferRecipient)
         btnValidateTransaction = view.findViewById(R.id.btnValidateTransaction)
         editTransferRecipientCpf = view.findViewById(R.id.editTransferRecipientCpf)
+        progressBar = view.findViewById(R.id.progressBar)
     }
 
     private fun makeDeposit(deposit: Deposit) {
@@ -145,13 +154,16 @@ class ServicesFragment : Fragment() {
         callback.enqueue(object : Callback<Deposit> {
             override fun onResponse(call: Call<Deposit>, response: Response<Deposit>) {
                 Toast.makeText(context, "Deposit succeed.", Toast.LENGTH_SHORT).show()
+                clearInterface()
             }
 
             override fun onFailure(call: Call<Deposit>, t: Throwable) {
                 Toast.makeText(context, "Error while making transaction.", Toast.LENGTH_SHORT)
                     .show()
+                clearInterface()
             }
         })
+
     }
 
     private fun makePurchase(purchase: Purchase) {
@@ -164,11 +176,13 @@ class ServicesFragment : Fragment() {
         callback.enqueue(object : Callback<Purchase> {
             override fun onResponse(call: Call<Purchase>, response: Response<Purchase>) {
                 Toast.makeText(context, "Purchase succeed.", Toast.LENGTH_SHORT).show()
+                clearInterface()
             }
 
             override fun onFailure(call: Call<Purchase>, t: Throwable) {
                 Toast.makeText(context, "Error while making transaction.", Toast.LENGTH_SHORT)
                     .show()
+                clearInterface()
             }
         })
     }
@@ -183,13 +197,24 @@ class ServicesFragment : Fragment() {
         callback.enqueue(object : Callback<Transfer> {
             override fun onResponse(call: Call<Transfer>, response: Response<Transfer>) {
                 Toast.makeText(context, "Transfer succeed.", Toast.LENGTH_SHORT).show()
+                clearInterface()
             }
 
             override fun onFailure(call: Call<Transfer>, t: Throwable) {
                 Toast.makeText(context, "Error while making transaction.", Toast.LENGTH_SHORT)
                     .show()
+                clearInterface()
             }
         })
+    }
+
+    private fun clearInterface() {
+        editDescription.setText("")
+        editCashValue.setText("")
+        editDate.setText("")
+        rgTransationType.clearCheck()
+
+        progressBar.visibility = View.GONE
     }
 
 }
