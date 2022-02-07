@@ -23,4 +23,7 @@ interface FiPayApi {
     @POST("transferencia/")
     fun makeTransfer(@Body transaction: Transfer): Call<Transfer>
 
+    @GET("moedas/")
+    fun getCurrency(): Call<List<HashMap<String, List<HashMap<String, String>>>>>
+
 }
