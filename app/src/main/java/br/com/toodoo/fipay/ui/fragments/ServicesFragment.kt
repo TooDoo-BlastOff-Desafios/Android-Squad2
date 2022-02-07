@@ -13,10 +13,8 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import br.com.toodoo.fipay.R
-import br.com.toodoo.fipay.api.FiPayApi
 import br.com.toodoo.fipay.helper.FiPayApiHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
-import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.Deposit
 import br.com.toodoo.fipay.model.Purchase
 import br.com.toodoo.fipay.model.Transfer
