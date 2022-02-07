@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import br.com.toodoo.fipay.R
 import br.com.toodoo.fipay.api.FiPayApi
+import br.com.toodoo.fipay.helper.FiPayApiHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.Deposit
@@ -146,10 +147,7 @@ class ServicesFragment : Fragment() {
 
     private fun makeDeposit(deposit: Deposit) {
 
-        val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
-        val endpoint = retrofitClient.create(FiPayApi::class.java)
-
-        val callback: Call<Deposit> = endpoint.makeDeposit(deposit)
+        val callback: Call<Deposit> = FiPayApiHelper.endpoint.makeDeposit(deposit)
 
         callback.enqueue(object : Callback<Deposit> {
             override fun onResponse(call: Call<Deposit>, response: Response<Deposit>) {
@@ -168,10 +166,7 @@ class ServicesFragment : Fragment() {
 
     private fun makePurchase(purchase: Purchase) {
 
-        val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
-        val endpoint = retrofitClient.create(FiPayApi::class.java)
-
-        val callback: Call<Purchase> = endpoint.makePurchase(purchase)
+        val callback: Call<Purchase> = FiPayApiHelper.endpoint.makePurchase(purchase)
 
         callback.enqueue(object : Callback<Purchase> {
             override fun onResponse(call: Call<Purchase>, response: Response<Purchase>) {
@@ -189,10 +184,7 @@ class ServicesFragment : Fragment() {
 
     private fun makeTransfer(transfer: Transfer) {
 
-        val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
-        val endpoint = retrofitClient.create(FiPayApi::class.java)
-
-        val callback: Call<Transfer> = endpoint.makeTransfer(transfer)
+        val callback: Call<Transfer> = FiPayApiHelper.endpoint.makeTransfer(transfer)
 
         callback.enqueue(object : Callback<Transfer> {
             override fun onResponse(call: Call<Transfer>, response: Response<Transfer>) {
