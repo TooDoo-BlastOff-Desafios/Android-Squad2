@@ -13,6 +13,7 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.widget.LinearLayoutCompat
 import br.com.toodoo.fipay.R
+import br.com.toodoo.fipay.helper.AuthenticationHelper
 import br.com.toodoo.fipay.helper.FiPayApiHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.model.Deposit
@@ -107,13 +108,13 @@ class ServicesFragment : Fragment() {
                     // Verify the checked radio button and call the corresponding transaction method
                     if (rgTransationType.checkedRadioButtonId == R.id.rbDeposit) {
                         val deposit =
-                            Deposit(description, value, date, FirebaseHelper.logedUser!!.cpf)
+                            Deposit(description, value, date, AuthenticationHelper.logedUser!!.cpf)
                         makeDeposit(deposit)
 
                         progressBar.visibility = View.VISIBLE
                     } else if (rgTransationType.checkedRadioButtonId == R.id.rbPurchase) {
                         val purchase =
-                            Purchase(description, value, date, FirebaseHelper.logedUser!!.cpf)
+                            Purchase(description, value, date, AuthenticationHelper.logedUser!!.cpf)
                         makePurchase(purchase)
 
                         progressBar.visibility = View.VISIBLE

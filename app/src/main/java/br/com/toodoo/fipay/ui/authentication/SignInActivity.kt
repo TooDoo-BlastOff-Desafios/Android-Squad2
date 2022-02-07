@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import androidx.core.content.ContextCompat
 import br.com.toodoo.fipay.R
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.model.User
@@ -96,12 +97,21 @@ class SignInActivity : AppCompatActivity() {
                         startActivity(intent)
                         finish()
                     } else {
-                        Snackbar.make(signInLayout, "Please verify your e-mail address.", Snackbar.LENGTH_LONG).show()
+                        val snackbar = Snackbar.make(signInLayout, "Please verify your e-mail address.", Snackbar.LENGTH_LONG)
+                        snackbar.setBackgroundTint(getColor(R.color.purple_700))
+                        snackbar.setTextColor(getColor(R.color.white))
+                        snackbar.show()
+
                         FirebaseHelper.getFirebaseAuth().signOut()
                         progressBar.visibility = View.GONE
                     }
                 } else {
-                    it.exception?.let { exception -> Snackbar.make(signInLayout, exception.message!!, Snackbar.LENGTH_LONG).show() }
+                    it.exception?.let { exception ->
+                        val snackbar = Snackbar.make(signInLayout, exception.message!!, Snackbar.LENGTH_LONG)
+                        snackbar.setBackgroundTint(getColor(R.color.purple_700))
+                        snackbar.setTextColor(getColor(R.color.white))
+                        snackbar.show()
+                    }
                     progressBar.visibility = View.GONE
                 }
             }

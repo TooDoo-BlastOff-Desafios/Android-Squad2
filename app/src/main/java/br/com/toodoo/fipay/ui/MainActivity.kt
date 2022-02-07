@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import br.com.toodoo.fipay.R
 import br.com.toodoo.fipay.api.FiPayApi
+import br.com.toodoo.fipay.helper.AuthenticationHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.User
@@ -97,7 +98,7 @@ class MainActivity : AppCompatActivity() {
                     response.body()?.let { responseBody ->
                         val userData = responseBody.filter { it.email == userEmail }
                         user = userData[0]
-                        FirebaseHelper.logedUser = userData[0]
+                        AuthenticationHelper.logedUser = userData[0]
                         continueExecution()
                     }
                 }

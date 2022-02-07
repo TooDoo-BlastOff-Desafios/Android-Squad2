@@ -11,7 +11,7 @@ class FirebaseHelper {
 
         private var auth: FirebaseAuth? = null
         private var dbRef: DatabaseReference? = null
-        var logedUser: User? = null
+
 
         fun getFirebaseAuth(): FirebaseAuth {
             if (auth == null) {
