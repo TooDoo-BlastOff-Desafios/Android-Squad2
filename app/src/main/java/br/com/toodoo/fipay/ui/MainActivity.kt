@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentTransaction
 import br.com.toodoo.fipay.R
 import br.com.toodoo.fipay.api.FiPayApi
 import br.com.toodoo.fipay.helper.AuthenticationHelper
+import br.com.toodoo.fipay.helper.FiPayApiHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.helper.NetworkHelper
 import br.com.toodoo.fipay.model.User
@@ -91,9 +92,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun getUserData(userEmail: String?) {
         if (userEmail != null) {
-            val retrofitClient = NetworkHelper.getRetrofitInstance(NetworkHelper.fipayBaseUrl)
-            val endpoint = retrofitClient.create(FiPayApi::class.java)
-            val callback = endpoint.getUsers()
+            val callback = FiPayApiHelper.endpoint.getUsers()
 
             callback.enqueue(object : Callback<List<User>> {
                 override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {

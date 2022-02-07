@@ -10,7 +10,10 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:background="@color/purple_700" />
+        android:background="@color/purple_700"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/materialCardView4"
@@ -64,6 +67,7 @@
                     android:text="Name" />
 
                 <TextView
+                    android:id="@+id/editFullName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.7"
@@ -87,6 +91,7 @@
                     android:text="Email" />
 
                 <TextView
+                    android:id="@+id/editEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.7"
@@ -110,6 +115,7 @@
                     android:text="CPF" />
 
                 <TextView
+                    android:id="@+id/editCPF"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.7"
@@ -133,6 +139,7 @@
                     android:text="Address" />
 
                 <TextView
+                    android:id="@+id/editAddress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.7"
