@@ -93,6 +93,7 @@
 
                 <EditText
                     android:id="@+id/editCashValue"
+                    android:hint="0.00"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -116,6 +117,7 @@
                     android:text="Date" />
 
                 <EditText
+                    android:hint="02/02/2022"
                     android:id="@+id/editDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -149,6 +151,7 @@
 
             <EditText
                 android:id="@+id/editTransferRecipientCpf"
+                android:hint="000.000.000-00"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

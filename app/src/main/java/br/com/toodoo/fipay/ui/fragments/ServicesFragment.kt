@@ -62,17 +62,49 @@ class ServicesFragment : Fragment() {
         return view
     }
 
+    private fun String.isValidDate(): Boolean {
+        // If it doesn't contains "/" and has lass than 10 characters is invalid
+        if (this.length < 10) return false
+        if (!this.contains("/")) return false
+
+        val splitDate = this.split("/")
+
+        // If when splited it doesn't have size = 3
+        // Or the year has less than 4 characters
+        // Than the "/" are in the wrong position
+        if (splitDate.size < 3 || splitDate[2].length < 4) return false
+
+        val day = splitDate[0].toInt()
+        val month = splitDate[1].toInt()
+        val year = splitDate[2].toInt()
+
+        // Maximum days per month
+        val monthLength = arrayListOf(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
+        val calendar = Calendar.getInstance()
+
+        // Check month and year are out of range or less than current date
+        if(year != calendar.get(Calendar.YEAR) || month < (calendar.get(Calendar.MONTH) + 1) || month > 12) return false;
+
+        // Verify leap years
+        if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+            monthLength[1] = 29
+
+        return day > 0 && day <= monthLength[month - 1] && day >= calendar.get(Calendar.DAY_OF_MONTH)
+    }
+
+    @SuppressLint("SimpleDateFormat")
     private fun validateTransaction() {
         btnValidateTransaction.setOnClickListener {
             if (editCashValue.text.isNotEmpty()) {
 
-                if (editDate.text.isNotEmpty()) {
+                if (editDate.text.isNotEmpty() && editDate.text.toString().isValidDate()) {
                     val description = editDescription.text.toString()
                     val value = editCashValue.text.toString().toDouble()
                     val dateFormatFromString = SimpleDateFormat("dd/MM/yyyy")
                     val dateFormat = SimpleDateFormat("yyyy-MM-dd")
                     val date =
-                        dateFormat.format(dateFormatFromString.parse(editDate.text.toString()))
+                        dateFormat.format(dateFormatFromString.parse(editDate.text.toString())!!)
 
                     // Verify the checked radio button and call the corresponding transaction method
                     if (rgTransationType.checkedRadioButtonId == R.id.rbDeposit) {
@@ -102,6 +134,9 @@ class ServicesFragment : Fragment() {
                         }
                     }
 
+                } else {
+                    editDate.error = "You must provide a valid date."
+                    editDate.requestFocus()
                 }
             } else {
                 editCashValue.error = "You must provide a value."
