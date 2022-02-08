@@ -1,5 +1,6 @@
 package br.com.toodoo.fipay.ui
 
+import android.accounts.Account
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
@@ -19,11 +21,17 @@ import br.com.toodoo.fipay.R
 import br.com.toodoo.fipay.helper.AuthenticationHelper
 import br.com.toodoo.fipay.helper.FiPayApiHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
+import br.com.toodoo.fipay.model.Deposit
+import br.com.toodoo.fipay.model.Purchase
 import br.com.toodoo.fipay.model.User
 import br.com.toodoo.fipay.ui.fragments.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.NumberFormat
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
@@ -37,16 +45,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
 
-    private var user: User = User()
+    private lateinit var user: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val userEmail = FirebaseHelper.getFirebaseAuth().currentUser?.email
+        user = AuthenticationHelper.getUser()!!
 
         initComponents()
-        getUserData(userEmail)
+
+
 
         val settingsSelectedItem = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -67,8 +76,36 @@ class MainActivity : AppCompatActivity() {
         // Init fragmentManager and set the MyCardFragment to be load when the activity is created
         fragmentManager = supportFragmentManager
         fragmentTransaction = fragmentManager.beginTransaction()
-
+        toolbarTitle.text = "${getGreetings()}, ${user.fullName.split(" ")[0]}"
         fragmentTransaction.replace(R.id.navigation_host_fragment, MyCardFragment()).commit()
+
+        getPurchases()
+    }
+
+    private fun getPurchases() {
+        GlobalScope.launch(Dispatchers.IO) {
+            val call = FiPayApiHelper.endpoint.getPurchases()
+            val response = call.execute().body()
+
+            if (response != null) {
+                AuthenticationHelper.getUser()?.purchases = response as MutableList<Purchase>
+
+                for (purchase in response) {
+                    if (purchase.cliente == AuthenticationHelper.getUser()?.cpf) {
+                        AuthenticationHelper.getUser()!!.purchaseBalance += purchase.cash_value
+                    }
+                }
+
+                runOnUiThread {
+                    findViewById<TextView>(R.id.txtBalanceValue).text = NumberFormat.getCurrencyInstance().format(AuthenticationHelper.getUser()!!.purchaseBalance)
+                }
+
+            } else {
+                FirebaseHelper.getFirebaseAuth().signOut()
+                Toast.makeText(this@MainActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
     }
 
     private fun initComponents() {
@@ -87,38 +124,45 @@ class MainActivity : AppCompatActivity() {
         window.statusBarColor = Color.WHITE
     }
 
-    private fun getUserData(userEmail: String?) {
-        if (userEmail != null) {
-            val callback = FiPayApiHelper.endpoint.getUsers()
+//    private fun getUserData(userEmail: String?) {
+//        if (userEmail != null) {
+//            val callback = FiPayApiHelper.endpoint.getUsers()
+//
+//            callback.enqueue(object : Callback<List<User>> {
+//                override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+//                    response.body()?.let { responseBody ->
+//                        val userData = responseBody.filter { it.email == userEmail }
+//
+//                        user = userData[0]
+//                        calculateBalance()
+//                        continueExecution()
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<List<User>>, t: Throwable) {
+//                    FirebaseHelper.getFirebaseAuth().signOut()
+//                    Toast.makeText(this@MainActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
+//                    finish()
+//                }
+//
+//            })
+//        } else {
+//            FirebaseHelper.getFirebaseAuth().signOut()
+//            Toast.makeText(this@MainActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
+//            finish()
+//        }
+//    }
 
-            callback.enqueue(object : Callback<List<User>> {
-                override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                    response.body()?.let { responseBody ->
-                        val userData = responseBody.filter { it.email == userEmail }
-                        user = userData[0]
-                        AuthenticationHelper.logedUser = userData[0]
-                        continueExecution()
-                    }
-                }
+    private fun calculateBalance() {
 
-                override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                    FirebaseHelper.getFirebaseAuth().signOut()
-                    Toast.makeText(this@MainActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
-                    finish()
-                }
-
-            })
-        } else {
-            FirebaseHelper.getFirebaseAuth().signOut()
-            Toast.makeText(this@MainActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
-            finish()
-        }
     }
 
     // All the code that must only execute after getUserData()
-    private fun continueExecution() {
-        toolbarTitle.text = "${getGreetings()}, ${user.fullName.split(" ")[0]}"
-    }
+//    private fun continueExecution() {
+//        toolbarTitle.text = "${getGreetings()}, ${user.fullName.split(" ")[0]}"
+//        Log.i("FIPAY_LOG", "continueExecution: ${AuthenticationHelper.logedUser?.balance}")
+//
+//    }
 
     private fun getGreetings(): String {
         val time = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)

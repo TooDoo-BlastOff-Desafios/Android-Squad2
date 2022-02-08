@@ -14,8 +14,14 @@ interface FiPayApi {
     @GET("cadastro_clientes/")
     fun getUsers(): Call<List<User>>
 
+    @GET("deposito/")
+    fun getDeposits(): Call<List<Deposit>>
+
     @POST("deposito/")
     fun makeDeposit(@Body transaction: Deposit): Call<Deposit>
+
+    @GET("compras-feitas/")
+    fun getPurchases(): Call<List<Purchase>>
 
     @POST("compras-feitas/")
     fun makePurchase(@Body transaction: Purchase): Call<Purchase>

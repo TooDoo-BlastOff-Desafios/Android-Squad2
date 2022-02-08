@@ -26,10 +26,10 @@ class AccountFragment : Fragment() {
 
         initComponents(view)
 
-        editFullName.text = AuthenticationHelper.logedUser!!.fullName
-        editEmail.text = AuthenticationHelper.logedUser!!.email
-        editCPF.text = "******${AuthenticationHelper.logedUser!!.cpf.substring(6)}"
-        editAddress.text = AuthenticationHelper.logedUser!!.street
+        editFullName.text = AuthenticationHelper.getUser()?.fullName
+        editEmail.text = AuthenticationHelper.getUser()?.email
+        editCPF.text = "******${AuthenticationHelper.getUser()?.cpf?.substring(6)}"
+        editAddress.text = AuthenticationHelper.getUser()?.street
 
         return view
     }

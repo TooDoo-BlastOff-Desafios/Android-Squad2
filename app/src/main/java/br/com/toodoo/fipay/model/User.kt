@@ -1,11 +1,12 @@
 package br.com.toodoo.fipay.model
 
-import br.com.toodoo.fipay.helper.FirebaseHelper
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.Exclude
-import com.google.firebase.database.ValueEventListener
+import android.util.Log
+import br.com.toodoo.fipay.helper.FiPayApiHelper
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.Serializable
 
 class User(
@@ -21,4 +22,8 @@ class User(
 //    var address: Address = Address()
 ) : Serializable {
 
+    var deposits: MutableList<Deposit> = mutableListOf()
+    var transfers: MutableList<Transfer> = mutableListOf()
+    var purchases: MutableList<Purchase> = mutableListOf()
+    var purchaseBalance: Double = 0.0
 }

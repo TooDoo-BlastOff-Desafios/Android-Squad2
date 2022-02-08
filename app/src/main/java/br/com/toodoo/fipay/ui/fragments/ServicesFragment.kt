@@ -108,14 +108,17 @@ class ServicesFragment : Fragment() {
                     // Verify the checked radio button and call the corresponding transaction method
                     if (rgTransationType.checkedRadioButtonId == R.id.rbDeposit) {
                         val deposit =
-                            Deposit(description, value, date, AuthenticationHelper.logedUser!!.cpf)
+                            Deposit(description, value, date, AuthenticationHelper.getUser()!!.cpf)
                         makeDeposit(deposit)
 
                         progressBar.visibility = View.VISIBLE
                     } else if (rgTransationType.checkedRadioButtonId == R.id.rbPurchase) {
                         val purchase =
-                            Purchase(description, value, date, AuthenticationHelper.logedUser!!.cpf)
+                            Purchase(description, value, date, AuthenticationHelper.getUser()!!.cpf)
                         makePurchase(purchase)
+
+                        AuthenticationHelper.getUser()!!.purchases.add(purchase)
+                        AuthenticationHelper.getUser()!!.purchaseBalance += purchase.cash_value
 
                         progressBar.visibility = View.VISIBLE
                     } else if (rgTransationType.checkedRadioButtonId == R.id.rbTransfer) {

@@ -7,12 +7,22 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
-import androidx.core.content.ContextCompat
 import br.com.toodoo.fipay.R
+import br.com.toodoo.fipay.helper.AuthenticationHelper
+import br.com.toodoo.fipay.helper.FiPayApiHelper
 import br.com.toodoo.fipay.helper.FirebaseHelper
 import br.com.toodoo.fipay.model.User
 import br.com.toodoo.fipay.ui.MainActivity
+import br.com.toodoo.fipay.ui.WelcomeActivity
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.util.*
+import kotlin.concurrent.timerTask
 
 class SignInActivity : AppCompatActivity() {
 
@@ -25,9 +35,13 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
 
+    private lateinit var user: User
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_in)
+
+        user = User()
 
         initComponents()
 
@@ -73,11 +87,10 @@ class SignInActivity : AppCompatActivity() {
             if (password.isNotEmpty()) {
                 progressBar.visibility = View.VISIBLE
 
-                val user = User()
                 user.email = email
                 user.password = password
 
-                signIn(user)
+                signIn()
             } else {
                 editPassword.error = "You must type a password"
             }
@@ -88,14 +101,12 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun signIn(user: User) {
+    private fun signIn() {
         FirebaseHelper.getFirebaseAuth().signInWithEmailAndPassword(user.email, user.password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
                     if (emailIsVerified()) {
-                        val intent = Intent(this@SignInActivity, MainActivity::class.java)
-                        startActivity(intent)
-                        finish()
+                        getUserData(user.email)
                     } else {
                         val snackbar = Snackbar.make(signInLayout, "Please verify your e-mail address.", Snackbar.LENGTH_LONG)
                         snackbar.setBackgroundTint(getColor(R.color.purple_700))
@@ -115,6 +126,33 @@ class SignInActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                 }
             }
+    }
+
+    private fun getUserData(userEmail: String?) {
+        if (userEmail != null) {
+
+            GlobalScope.launch(Dispatchers.IO) {
+                val callback = FiPayApiHelper.endpoint.getUsers()
+                val response = callback.execute()
+                val userData = response.body()?.filter { it.email == userEmail }
+
+                if (userData != null) {
+                    AuthenticationHelper.setUser(userData[0])
+                    val intent = Intent(this@SignInActivity, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                } else {
+                    FirebaseHelper.getFirebaseAuth().signOut()
+                    Toast.makeText(this@SignInActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+
+            }
+        } else {
+            FirebaseHelper.getFirebaseAuth().signOut()
+            Toast.makeText(this@SignInActivity, "Something is wrong. Please try again later.", Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
 
     private fun emailIsVerified(): Boolean {
